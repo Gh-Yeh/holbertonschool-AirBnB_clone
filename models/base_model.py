@@ -7,11 +7,27 @@ import datetime
 class BaseModel:
     """Represents the BaseModel of the HBnB project."""
 
-    def __init__(self):
-        """Initialize a new BaseModel."""
-        self.id = str(uuid.uuid4())
-        self.created_at = datetime.datetime.today()
-        self.updated_at = datetime.datetime.today()
+    def __init__(self, *args, **kwargs):
+        """Initialize a new BaseModel.
+
+        Args:
+            *args (any): Unused.
+            **kwargs (dict): Key/value pairs of attributes.
+        """
+        if kwargs:
+            format_dt = "%Y-%m-%dT%H:%M:%S.%f"
+            for key, value in kwargs.items():
+                if key == '__class__':
+                    continue
+                if key in ('updated_at', 'created_at'):
+                    setattr(self, key, datetime.datetime.strptime(
+                        value, format_dt))
+                else:
+                    setattr(self, key, value)
+        else:
+            self.id = str(uuid.uuid4())
+            self.created_at = datetime.datetime.today()
+            self.updated_at = datetime.datetime.today()
 
     def save(self):
         """Update updated_at with the current datetime."""
